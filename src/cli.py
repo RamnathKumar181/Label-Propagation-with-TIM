@@ -34,7 +34,12 @@ def parse_args():
                         type=float,
                         default=1,
                         help="Lambda used in tim. (Default = 1)")
-    parser.add_argument("--p",
+    parser.add_argument("--alpha",
+                        required=False,
+                        type=float,
+                        default=1,
+                        help="Entropy importance. (Default = 1)")
+    parser.add_argument("--beta",
                         required=False,
                         type=float,
                         default=1,

@@ -30,16 +30,12 @@ class LTrainer():
         self._build()
 
     def _build(self):
+        print(self.args)
         self._build_loaders()
         self._build_model()
         self._build_criteria_and_optim()
         self._build_scheduler()
-        for lmda in np.arange(0.1, 1.1, 0.1):
-            for p in np.arange(0.0, 1.1, 0.1):
-                self.args.p = p
-                self.args.lmda = lmda
-                print(f"Using model: {self.args.model}; lambda: {self.args.lmda}; p: {self.args.p}")
-                self.train()
+        self.train()
 
     def _build_loaders(self):
         if self.args.dataset in ["arxiv", "products"]:
@@ -71,52 +67,50 @@ class LTrainer():
         for self.run in range(self.args.runs):
             import gc
             gc.collect()
-            # print(sum(p.numel() for p in self.model.parameters()))
             self.model.reset_parameters()
             best_valid = 0
             best_out = None
             for epoch in range(1, self.args.epochs):
-                loss = self.train_epoch()
+                loss = self.train_epoch(epoch)
                 result, out = self.test_epoch()
                 train_acc, valid_acc, test_acc = result
                 if valid_acc > best_valid:
                     best_valid = valid_acc
                     best_out = out.cpu().exp()
-                if self.args.tim:
-                    wandb.log({f"Loss_{self.run}_{self.args.lmda}_{self.args.p}": loss,
-                              f"Train_{self.run}_{self.args.lmda}_{self.args.p}": train_acc,
-                              f"Valid_{self.run}_{self.args.lmda}_{self.args.p}": valid_acc,
-                              f"Test_{self.run}_{self.args.lmda}_{self.args.p}": test_acc,
-                              f"Basic_loss_tim_{self.run}_{self.args.lmda}_{self.args.p}": self.basic_loss_tim,
-                              f"Entropy_tim_{self.run}_{self.args.lmda}_{self.args.p}": self.entropy_tim,
-                              f"Conditional_entropy_tim_{self.run}_{self.args.lmda}_{self.args.p}": self.conditional_entropy_tim})
-                else:
-                    wandb.log({f"Loss_{self.run}": loss,
-                              f"Train_{self.run}": train_acc,
-                              f"Valid_{self.run}": valid_acc,
-                              f"Test_{self.run}": test_acc})
+                if not self.run:
+                    if self.args.tim:
+                        wandb.log({f"Loss": loss,
+                                  f"Train": train_acc,
+                                  f"Valid": valid_acc,
+                                  f"Test": test_acc,
+                                  f"Basic_loss_tim": self.basic_loss_tim,
+                                  f"Entropy_tim": self.entropy_tim,
+                                  f"Conditional_entropy_tim": self.conditional_entropy_tim})
+                    else:
+                        wandb.log({f"Loss": loss,
+                                  f"Train": train_acc,
+                                  f"Valid": valid_acc,
+                                  f"Test": test_acc})
                 logger.add_result(self.run, result)
 
-            # logger.print_statistics(self.run)
             torch.save(best_out, f'{self.model_dir}/{self.run}.pt')
 
         logger.print_statistics()
 
 
-    def train_epoch(self):
+    def train_epoch(self, epoch):
         self.model.train()
         self.optimizer.zero_grad()
         out = self.model(self.x[self.train_idx])
         loss = self.criterion(out, self.y_true.squeeze(1)[self.train_idx])
-        if self.args.tim:
+        if self.args.tim and epoch >= 100:
             prob = self.model(self.x[self.split_idx['valid']])
             entropy = get_entropy(prob)
             conditional_entropy = get_cond_entropy(prob)
             self.basic_loss_tim = loss.item()
             self.entropy_tim = entropy.item()
             self.conditional_entropy_tim = conditional_entropy.item()
-            # loss = loss + (self.args.lmda * (conditional_entropy - (self.args.p * entropy)))
-            loss = (self.args.lmda * loss) + (conditional_entropy - (self.args.p * entropy))
+            loss = (self.args.lmda * loss) + (self.args.alpha *conditional_entropy) - (self.args.beta * entropy)
         loss.backward()
         self.optimizer.step()
 
