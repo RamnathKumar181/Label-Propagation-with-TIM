@@ -9,6 +9,11 @@ def parse_args():
     parser = ArgumentParser(
         description = "Basic Interface for the Livia "
     )
+    parser.add_argument("--type",
+                        required=True,
+                        type=str,
+                        choices=['maml', 'vanilla'],
+                        help="Type of training to be used. Options include %(choices)")
     parser.add_argument("--dataset",
                         required=True,
                         type=str,
@@ -29,6 +34,11 @@ def parse_args():
                         type=float,
                         default=0.01,
                         help="Learning rate (Default = 0.01)")
+    parser.add_argument("--lr_tim",
+                        required=False,
+                        type=float,
+                        default=0.0005,
+                        help="Learning rate (Default = 0.0005)")
     parser.add_argument("--lmda",
                         required=False,
                         type=float,
@@ -44,16 +54,16 @@ def parse_args():
                         type=float,
                         default=1,
                         help="Entropy importance. (Default = 1)")
+    parser.add_argument("--gamma",
+                        required=False,
+                        type=float,
+                        default=1,
+                        help="KL Divergence importance. (Default = 1)")
     parser.add_argument("--epochs",
                         required=False,
                         type=int,
                         default=300,
                         help="Number of epochs (Default = 300)")
-    parser.add_argument("--batch_size",
-                        required=False,
-                        type=int,
-                        default=32,
-                        help="Batch size (Default = 32)")
     parser.add_argument("--runs",
                         required=False,
                         type=int,
@@ -70,10 +80,10 @@ def parse_args():
                         dest="eval",
                         action="store_true",
                         help="Set to true if you want to evaluate your model")
-    parser.add_argument("--correct_smooth",
+    parser.add_argument("--use_correct_smooth",
                         required=False,
                         default=False,
-                        dest="correct_smooth",
+                        dest="use_correct_smooth",
                         action="store_true",
                         help="Set to true if you want to use correct_smooth")
     parser.add_argument("--use_embeddings",

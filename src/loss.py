@@ -14,6 +14,11 @@ def get_cond_entropy(probs):
     q_cond_ent = - (probs * torch.log(probs + 1e-12)).sum(1).mean(0, keepdim=True)
     return q_cond_ent
 
+def get_kld(target, input):
+    input = torch.exp(input).mean(0, keepdim=True)
+    kld = (target * torch.log((target  + 1e-12)/(input + 1e-12))).sum()
+    return kld
+
 def get_cross_entropy_loss(y_pred, y_true):
     ce_loss = nn.CrossEntropyLoss()
     return ce_loss(y_pred, y_true)
