@@ -5,8 +5,6 @@ import torch
 
 def get_dataloader(args, device):
     dataset = PygNodePropPredDataset(name=f'ogbn-{args.dataset}',transform=T.ToSparseTensor())
-    # data = dataset[0]
-    # data.adj_t = data.adj_t.to_symmetric()
     try:
         print('Using previously computed Data')
         y_true = torch.load(f"dataset/{args.dataset}-y.pt")
@@ -19,9 +17,12 @@ def get_dataloader(args, device):
         y_true = y_true.to(device)
         train_idx = split_idx['train'].to(device)
         print("Computed Everything")
-        return x, y_true, train_idx, dataset.num_classes, split_idx
+        return x, y_true, train_idx,  dataset.num_classes, split_idx
     except Exception as e:
         print(e)
+
+    #     data = dataset[0]
+    #     data.adj_t = data.adj_t.to_symmetric()
 
     #     x = data.x
     #     split_idx = dataset.get_idx_split()

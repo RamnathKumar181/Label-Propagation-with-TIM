@@ -10,14 +10,16 @@ def parse_args():
         description = "Basic Interface for the Livia "
     )
     parser.add_argument("--type",
-                        required=True,
+                        required=False,
                         type=str,
                         choices=['maml', 'vanilla'],
+                        default='vanilla',
                         help="Type of training to be used. Options include %(choices)")
     parser.add_argument("--dataset",
-                        required=True,
+                        required=False,
                         type=str,
                         choices=['arxiv', 'products'],
+                        default='arxiv',
                         help="Dataset to be used. Options include %(choices)")
     parser.add_argument("--exp_name",
                         required=False,
@@ -25,9 +27,10 @@ def parse_args():
                         default='exp',
                         help="Name of experiment (Default = 'exp')")
     parser.add_argument("--model",
-                        required=True,
+                        required=False,
                         type=str,
                         choices=['mlp'],
+                        default='mlp',
                         help="Model to be used. Options include %(choices)")
     parser.add_argument("--lr",
                         required=False,
@@ -37,7 +40,7 @@ def parse_args():
     parser.add_argument("--lr_tim",
                         required=False,
                         type=float,
-                        default=0.0005,
+                        default=0.0001,
                         help="Learning rate (Default = 0.0005)")
     parser.add_argument("--lmda",
                         required=False,
@@ -93,9 +96,10 @@ def parse_args():
                         action="store_true",
                         help="Set to true if you want to use embeddings")
     parser.add_argument("--criterion",
-                        required=True,
+                        required=False,
                         type=str,
                         choices=['nll', 'ce'],
+                        default='ce',
                         help="Dataset to be used. Options include %(choices)")
     parser.add_argument("--tim",
                         required=False,

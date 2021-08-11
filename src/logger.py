@@ -35,10 +35,10 @@ class Logger(object):
 
             print(f'All runs:')
             r = best_result[:, 0]
-            print(f'Highest Train: {r.mean():.4f} ± {r.std():.4f}')
+            print(f'Highest Train: {r.mean():.4f} +- {r.std():.4f}')
             r = best_result[:, 1]
-            print(f'Highest Valid: {r.mean():.4f} ± {r.std():.4f}')
+            print(f'Highest Valid: {r.mean():.4f} +- {r.std():.4f}')
             r = best_result[:, 2]
-            print(f'  Final Train: {r.mean():.4f} ± {r.std():.4f}')
+            print(f'  Final Train: {r.mean():.4f} +- {r.std():.4f}')
             r = best_result[:, 3]
-            print(f'   Final Test: {r.mean():.4f} ± {r.std():.4f}')
+            print(f'   Final Test: {r.mean():.4f} +- {r.std():.4f}')
