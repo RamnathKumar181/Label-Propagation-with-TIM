@@ -2,7 +2,7 @@
 
 This project involves the extension of TIM for graph tasks. Instead of using the standard TIM algorithm from the paper [Transductive Information Maximization For Few-Shot Learning](https://arxiv.org/abs/2008.11297) or the [TIM Implementation](https://github.com/mboudiaf/TIM), we adapt the loss to include KL-divergence instead of uniform distribution. The prior for the KL divergence is calculated using the validation dataset.
 Furthemore, we also reproduce the work from [Correct & Smooth paper](https://arxiv.org/abs/2010.13993) to serve as our backbone for our experimentation.
-The objective of this research to study the effect of TIM loss on few-shot graph models.
+The objective of this research to study the effect of TIM loss on graph models using label propagation setting.
 
 ## Datasets
 We run our experiments on 2 graph datasets - ogbn-products and ogbn-arxiv, both of which are public datasets.
